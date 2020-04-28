@@ -4,7 +4,7 @@ import java.util.Scanner;
 public class WheelOfFortune {
 
 	public static void main(String[] args) {
-		Scanner scanner = new Scanner(System.in);
+		Scanner scan = new Scanner(System.in);
 		boolean newGame = true;
 		Game game = new Game();
 		
@@ -15,14 +15,26 @@ public class WheelOfFortune {
 		game.consonants = consonants;
 		game.vowels = vowels;
 		
-		//setting up the display, here temporarily
-		//PUT ALL THIS IN A NEW GAME CLASS
-		String[] storedAnswer;
-		String[] boardAnswers;
-		String[] usedLetters;
-		String letter;
+		//Beginning of new game
+		while (newGame) {
+			game.newGame(scan);
+			//String[] storedAnswer = game.storedAnswer;
+			//String[] boardAnswers = game.boardAnswers;
+			
+			
+			
+			
+			
+			
+			//New Game?
+			System.out.println("\nWould you like to play a new game?");
+			if (!game.isYesOrNo(scan, scan.nextLine())) {
+				newGame = false;
+			}
+		}
+		
 
-		game.newGame();
+		
 		/* MOVED THIS INTO GAME - SEE IF WORKS
 		System.out.println("Hello"); //test
 		
@@ -63,7 +75,7 @@ public class WheelOfFortune {
 		
 		// Creating an empty HashMap 
 		 */
-		scanner.close();
+		scan.close();
 	}
 
 }

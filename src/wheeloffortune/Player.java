@@ -2,15 +2,14 @@ package wheeloffortune;
 import java.util.Scanner;
 
 public class Player {
-	Scanner scan = new Scanner(System.in);
 	
 	String name;
-	int score;
+	int score = 0;
 	int playerNum;
 	boolean turn = false;
 	
 	//Create new player
-	public  void setPlayer(int i) {
+	public  void setPlayer(Scanner scan, int i) {
 			//System.out.print("Player" + 1); //test
 			this.setNum(i);
 			System.out.println("\nWhat is your name, " + 
@@ -22,6 +21,16 @@ public class Player {
 			} else {
 				this.turn = false;
 			}
+	}
+	
+	public void startNewTurn() {
+		System.out.println("\n\nPlayer " + this.playerNum + ": " +
+							this.name + ", it's your turn!");
+		System.out.println("Score: " + this.score);
+		
+		System.out.println("\nWhat would you like to do?" +
+						"\n(Type a letter.) \n\nA. Spin Wheel" + 
+						"\nB. Choose Vowel \nC. Solve");
 	}
 	
 	//Player number
