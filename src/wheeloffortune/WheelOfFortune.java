@@ -17,20 +17,9 @@ public class WheelOfFortune {
 		
 		//Beginning of new game
 		while (newGame) {
-			game.newGame(scan);
-			//String[] storedAnswer = game.storedAnswer;
-			//String[] boardAnswers = game.boardAnswers;
-			
-			
-			
-			
-			
-			
-			//New Game?
-			System.out.println("\nWould you like to play a new game?");
-			if (!game.isYesOrNo(scan, scan.nextLine())) {
-				newGame = false;
+			newGame = game.newGame(scan);
 			}
+		scan.close();
 		}
 		
 
@@ -75,7 +64,6 @@ public class WheelOfFortune {
 		
 		// Creating an empty HashMap 
 		 */
-		scan.close();
+		
 	}
 
-}

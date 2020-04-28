@@ -5,7 +5,9 @@ public class Player {
 	
 	String name;
 	int score = 0;
+	int totalScore = 0;
 	int playerNum;
+	int freeSpins = 0;
 	boolean turn = false;
 	
 	//Create new player
@@ -24,13 +26,30 @@ public class Player {
 	}
 	
 	public void startNewTurn() {
-		System.out.println("\n\nPlayer " + this.playerNum + ": " +
+		System.out.println("\nPlayer " + this.playerNum + ": " +
 							this.name + ", it's your turn!");
-		System.out.println("Score: " + this.score);
+		System.out.println("Score: $" + this.score);
+		if (this.freeSpins > 0) {
+			System.out.println("Free Spins: " + this.freeSpins);
+		}
+		this.whatDo();
 		
+	}
+	
+	public void whatDo() {
 		System.out.println("\nWhat would you like to do?" +
-						"\n(Type a letter.) \n\nA. Spin Wheel" + 
-						"\nB. Choose Vowel \nC. Solve");
+				"\n(Type a number.) \n\n1. Spin Wheel" + 
+				"\n2. Choose Vowel \n3. Solve");
+	}
+	
+	public boolean useFreeSpin(Scanner scan) {
+		boolean useSpin = false;
+		System.out.println("\nWould you like to use a free spin?: ");
+		useSpin = Game.isYesOrNo(scan, scan.nextLine());
+		if (useSpin) {
+			this.freeSpins -= 1;
+		}
+		return useSpin;
 	}
 	
 	//Player number
@@ -60,6 +79,15 @@ public class Player {
 		return score;
 	}
 	
+	//Player total game score
+		public void setTotalScore(int playerTotalScore) {
+			this.totalScore = playerTotalScore;
+		}
+		
+		public int getTotalScore() {
+			return totalScore;
+		}
+	
 	//Player turn
 	public void isTurn() {
 		this.turn = true;
@@ -71,6 +99,17 @@ public class Player {
 	
 	public boolean checkTurn() {
 		return turn;
+	}
+	
+	public void addFreeSpin() {
+		freeSpins += 1;
+	}
+	public void setFreeSpin(int a) {
+		freeSpins = a;
+	}
+	
+	public int getFreeSpins () {
+		return freeSpins;
 	}
 
 }

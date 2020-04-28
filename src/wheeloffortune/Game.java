@@ -3,12 +3,12 @@ import java.util.Scanner;
 
 public class Game {
 	
-	boolean newGame = true; //maybe
 	int round;
 	int tempNum;
 	int numPlayers;
 	int boardLength;
 	int halfBoard;
+	boolean newGame;
 	String category;
 	String answer;
 	String letter;
@@ -21,7 +21,7 @@ public class Game {
 	Player[] player = new Player[4];
 	Wheel wheel = new Wheel();
 	
-	public void newGame(Scanner scan) {
+	public boolean newGame(Scanner scan) {
 		//Welcome message - Make fancier!
 		System.out.println("Welcome to Wheel of Fortune!");
 		
@@ -29,7 +29,7 @@ public class Game {
 		System.out.println("\n\nWould you like to start a new game? (y/n)");
 		this.newGame = isYesOrNo(scan, scan.nextLine());
 		
-		if (this.newGame) {
+		if (newGame) {
 			this.round = 1;
 			//get players
 			System.out.println("\nAlright, how many players?");
@@ -52,10 +52,21 @@ public class Game {
 			System.out.println("Goodbye!");
 			scan.close();
 		}
+		return newGame;
 	}
 	
 	//Start the next round!
 	public void newRound(Scanner scan) {
+		for (int i = 0; i < this.numPlayers; i++) {
+			player[i].setFreeSpin(0);
+			player[i].setScore(0);
+			//ALTER THIS SO WINNER OF LAST ROUND STARTS NEXT ROUND?
+			if (i == 0) {
+				player[i].isTurn();
+			} else {
+				player[i].isNotTurn();
+			}
+		}
 		this.consonants = resetCon();
 		this.vowels = resetVow();
 		
@@ -75,7 +86,7 @@ public class Game {
 		int turnNum = 0;
 		boolean solved = false;
 		
-		
+		System.out.println("Here's the board!");
 		//****************************************
 		//WHERE THE WHEEL STARTS SPINNING
 		//****************************************
@@ -85,31 +96,45 @@ public class Game {
 			
 			//SHOW THE BOARD
 			if (turnNum == 0) {
-				this.letterMsg = "Let's start Round " + this.round + "!\n";
+				this.letterMsg = "Let's start Round " + this.round + "!";
 			}
-			Answer.showBoard(this.boardAnswers, this.category, this.consonants, this.vowels, this.letterMsg); //TEST
-			
+			Answer.showBoard(this.boardAnswers, this.category, this.letterMsg); //TEST
 			//PAUSE
 			this.pause(scan);
+			Answer.showLetters(this.consonants, this.vowels);
+			System.out.println("");
 			
-			//PLAYER x: NAME, it's your turn!
-			//Score: 0
-			this.player[actPlay].startNewTurn();
-			this.pause(scan);
+			//Start next player's turn
+			while (this.player[actPlay].checkTurn()) {
+				//PLAYER x: NAME, it's your turn!
+				//Score: 0
+				this.player[actPlay].startNewTurn();
 			
-			//Method to choose -- if they choose then this
-			chooseConsonant(scan);
+				//Method to choose -- if they choose then this
+				SpecialCodes.doNow(scan, scan.nextLine(), player[actPlay], wheel, catAns, this);
 			
-			//will become where they choose before spinning
-			wheel.spinWheel(this.player[actPlay]);
+				//will become where they choose before spinning
+				//wheel.spinWheel(scan, this.player[actPlay]);
 			
-			//Set next turn
-			this.player[actPlay].isNotTurn();
-			turnNum++;
+				//Use free spin or set next turn
+				if (this.player[actPlay].getFreeSpins() > 0) {
+					if (this.player[actPlay].useFreeSpin(scan)) {
+						this.player[actPlay].isTurn();
+					} else {
+						this.player[actPlay].isNotTurn();
+					}
+				}
+				
+				//Start next player's turn if current player's turn has ended
+				if (!this.player[actPlay].checkTurn()) {
+					turnNum++;
+				}
+			}
 			
-			
-			
-			
+			//Add up player scores from last round
+			for (int i = 0; i < this.numPlayers; i++) {
+				player[i].setTotalScore(player[i].getTotalScore() + player[i].getScore());
+			}
 			
 			
 			//until further code to break look
@@ -153,15 +178,18 @@ public class Game {
 	
 	public String[] resetCon() {
 		String[] c = {"B", "C", "D", "F", "G", "H", "J", "K", "L", "M",
-				"N", "O", "P", "Q", "R", "S", "T", "V", "W", "X", "Y", "Z"};
+				"N", "P", "Q", "R", "S", "T", "V", "W", "X", "Y", "Z"};
 		return c;
 	}
 	
 	//Pick a consonant
-	public void chooseConsonant(Scanner scan) {
+	public boolean chooseConsonant(Scanner scan) {
 		String newBlank;
+		String message;
 		int numLetters = 0;
+		boolean isInAnswer;
 		System.out.println("\n\nPick a consonant:");
+		//CHECK IF IT'S A VOWEL TOO
 		this.letter = isConsonantLeft(scan, scan.nextLine(), this.consonants);
 		
 		//Replace letters on board;
@@ -180,14 +208,22 @@ public class Game {
 		
 		//Display result
 		if (numLetters > 1) {
-			this.letterMsg = "There are " + numLetters + " of the " + this.letter.toUpperCase() + "'s.\n";
+			message = "There are " + numLetters + " " + this.letter.toUpperCase() + "'s.";
+			this.letterMsg = "Congratulations, you scored!";
+			isInAnswer = true;
 		} else if (numLetters == 1) {
-			this.letterMsg = "There is one " + this.letter.toUpperCase() + ".\n";
+			message = "There is one " + this.letter.toUpperCase() + ".";
+			this.letterMsg = "Congratulations, you scored!";
+			isInAnswer = true;
 		} else {
-			this.letterMsg = "There are no " + this.letter.toUpperCase() + "'s.\n";
+			message = "There are no " + this.letter.toUpperCase() + "'s.";
+			this.letterMsg = "That's too bad!";
+			isInAnswer = false;
 		}
-		Answer.showBoard(this.boardAnswers, this.category, this.consonants, this.vowels, this.letterMsg);
-		
+		Answer.showBoard(this.boardAnswers, this.category, this.letterMsg);
+		Answer.showLetters(this.consonants, this.vowels);
+		System.out.println("\n\n" + message);
+		return isInAnswer;
 	}
 
 	
@@ -195,23 +231,32 @@ public class Game {
 	public String isConsonantLeft(Scanner scan, String letter, String[] cons) {
 		//Add fields to make sure it's not
 		boolean status = true;
+		boolean isVowel = true;
 		while (status = true) {
 			letter.toUpperCase();
-			for (int i = 0; i <21 ; i++) {
-				if ((i == 24 && !letter.contentEquals(cons[i])) ||
-						letter == " ") {
-					System.out.println("Please choose an available consonant.");
-					letter = scan.nextLine();
-					break;
-				} else {
-					if (cons[i] == letter) {
-						this.consonants[i] = " ";
-						status = false;
+			if (!letter.equals("A") && !letter.equals("E") &&
+					!letter.equals("I") && !letter.equals("O") &
+					!letter.equals("U")) {
+				for (int i = 0; i <21 ; i++) {
+					if ((i == 24 && !letter.contentEquals(cons[i])) ||
+							letter == " ") {
+						System.out.println("Please choose an available consonant.");
+						letter = scan.nextLine();
 						break;
+					} else {
+						if (cons[i] == letter) {
+							this.consonants[i] = " ";
+							status = false;
+							break;
+						}
 					}
-				}
+				
+				} break;
+			} else {
+				System.out.println("Please choose a consonant, not vowel.");
+				letter = scan.nextLine();
+			}
 			
-			} break;
 		}
 	return letter;
 	}
@@ -245,10 +290,10 @@ public class Game {
 
 	
 	//Check if player said yes or no
-	public boolean isYesOrNo(Scanner scan, String a) {
+	public static boolean isYesOrNo(Scanner scan, String a) {
 		
 		do {
-			a.toLowerCase();
+			a = a.toLowerCase();
 			if (a.startsWith("y")) {
 				return true;
 			} else if (a.startsWith("n")) {
@@ -263,7 +308,7 @@ public class Game {
 	//Pause for a moment
 	public void pause(Scanner scan) {
 		
-		System.out.println("\n(Press any letter + enter to continue.)\n");
+		System.out.println("\n(Hit \"enter\" to continue.)");
 		String a = scan.nextLine();
 	}
 }

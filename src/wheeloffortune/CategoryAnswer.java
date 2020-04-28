@@ -28,7 +28,6 @@ public enum CategoryAnswer {
     
     public static String replaceSpaces(String text) {
 		text = text.replaceAll("\\s+", "@");
-		System.out.println(text + "\n"); // test
 		return text;
 	}
 

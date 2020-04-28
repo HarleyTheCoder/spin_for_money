@@ -152,11 +152,26 @@ public class Answer {
 	}
 	
 	
-	
+	//Display available letters
+	public static void showLetters(String[] cons, String[] vows) {
+			System.out.println("Vowels: ");
+			for (int i = 0; i < 5; i++) {
+				System.out.print(vows[i] + " ");
+			}
+			
+			System.out.println("\n\nConsonants: ");
+			for (int i = 0; i < 21; i++) {
+				if (i == 10) {
+					System.out.print(cons[i] + "\n");
+				} else {
+					System.out.print(cons[i] + " ");
+				}
+			}
+	}
 	
 	//DISPLAY THE BOARD
-	public static void showBoard(String[] ansBoard, String category, String[] cons,
-									String[] vows, String letterMsg) {
+	public static void showBoard(String[] ansBoard, String category,
+								String letterMsg) {
 		int bLength = Answer.calcBoardLength(ansBoard);
 		String border = "";
 		String border2 = "";
@@ -186,20 +201,6 @@ public class Answer {
 		
 		System.out.println(letterMsg);
 		
-		//Display available letters
-		System.out.println("Vowels: ");
-		for (int i = 0; i < 5; i++) {
-			System.out.print(vows[i] + " ");
-		}
-		
-		System.out.println("\n\nConsonants: ");
-		for (int i = 0; i < 21; i++) {
-			if (i == 10) {
-				System.out.print(cons[i] + "\n");
-			} else {
-				System.out.print(cons[i] + " ");
-			}
-		}
 	}
 	
 	//SET UP INITIAL BOARD DISPLAY
